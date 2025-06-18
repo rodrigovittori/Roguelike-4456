@@ -4,24 +4,25 @@
 Pack Kodland: https://kenney.nl/assets/roguelike-caves-dungeons (NO VIENE PRECORTADO)
 packs de assets: https://kenney.nl/assets/series:Tiny?sort=update (LO TIENEN QUE ESCALAR)
 
-pack escalado (drive del profe): https://drive.google.com/drive/folders/19obh4TK0RIBWlXOsaOq9uJ287jUHuLTn?usp=drive_link
+Pack escalado (drive del profe): https://drive.google.com/drive/folders/19obh4TK0RIBWlXOsaOq9uJ287jUHuLTn?usp=drive_link
 
 > Página para redimensionar assets https://imageresizer.com/bulk-resize/
 
 Link al Repositorio de GitHub: https://github.com/rodrigovittori/Roguelike-4456
 Link al proyecto para remix: https://hub.kodland.org/project/309486
 ============================================================================================================================
-Version actual: [M9.L1] - Actividad #4: "Visualización del mapa en la pantalla"
-Objetivo: En función del valor de cada celda, renderizar el terreno correspondiente
+Version actual: [M9.L1] - Actividad #5: "Atributos"
+Objetivo: Familiarizarnos con los atributos agregando salud y ataque a nuestro personaje
+          > Creamos nuestro personaje como un objeto Actor() con sus respectivos atributos y los mostramos por pantalla
+
+NOTA: Modificar la llamada a dibujar_mapa() para que NO muestre los valores de cada casilla y eliminar texto de ventana
 
 PASOS:
+1º) Creamos Actor() personaje
+2º) Le damos sus atributos (salud, ataque)
+3º) Modificar nuestra función draw() p/ mostrarlos
 
-1º) Crear una paleta_terrenos = [] con los Actores que creamos previamente
-2º) Modificar dibujar_mapa() para que dibuje cada casilla según el valor correspondiente de la paleta
-
-NOTA: El texto en el for debe volver a center (top left no queda bien)
-NOTA 2: En la tarea anterior explicar variable mapa actual y en la próxima eliminar mostrar_valores
-
+NOTA: En el próximo ejercicio implementaremos el despalzamiento entre celdas por turnos con on_key_down(key)
 """
 
 # Ventana de juego hecha de celdas
@@ -49,6 +50,18 @@ HEIGHT = celda.height * cant_celdas_alto  # Alto de la ventana (en píxeles)
 TITLE = "Rogue-like: Mazmorra Maldita" # Título de la ventana de juego
 FPS = 60 # Número de fotogramas por segundo
 
+# Personaje:
+personaje = Actor("stand", size=(celda.width, celda.height)) # Creo mi PJ, y ajusto su tamaño al de las celdas
+
+# Nota: si quieren llevar control de la vida, pueden crear dos atributos: "salud_max" y "salud_actual"
+# personaje.salud = 100
+personaje.salud_max = 100
+personaje.salud_act = personaje.salud_max # El PJ empieza con la vida llena
+
+# Nota: si quieren hacer más interesante el combate pueden agregar atributos para el valor mínimo de ataque y el máximo
+# (también pueden implementar un sistema de miss y critical hits) Por ejemplo ataque de 2-5 de daño y crítico 2xMAX = 10
+personaje.ataque = 5
+
 ################## MAPAS ##################
 
 mapa = [ [0, 0, 0, 0, 0, 0, 0],
@@ -70,7 +83,7 @@ mapa_2 = [ [0, 0, 0, 0, 0, 0, 0],
 ##########################################
 
 mapa_actual = mapa # mapa a dibujar // cambiar valor si cambiamos de habitación
-mostrar_valores = True
+mostrar_valores = False
 
 """   #####################
      # FUNCIONES PROPIAS #
@@ -115,21 +128,8 @@ def draw():
     #       podríamos simplemente dibujarlo UNA vez y no en cada frame
     #       Implementar este cambio cuando nuestro juego tenga lógica más compleja
 
-    # Borrar después de la próxima tarea:
-    screen.draw.text(("  Ventana de " + str(cant_celdas_ancho) + " x " + str(cant_celdas_alto) + "  "), center=(WIDTH/2, int(celda.height /2)), color = "white", background = "black", fontsize = int(celda.height /2))
-
-    screen.draw.text("Pulse [Espacio] para alternar el diseño del mapa", center=(WIDTH/2, ((cant_celdas_alto * celda.height) - int(celda.height /2))), color = "white", background = "black", fontsize = int(celda.height /3))
-
-def on_key_down(key):
-    global mapa_actual, mostrar_valores
-    
-    if key == keys.SPACE:
-        if mapa_actual == mapa:
-            mapa_actual = mapa_2
-        else:
-            mapa_actual = mapa
-
-    if key == keys.M:
-        mostrar_valores = not mostrar_valores
-
-    
+    personaje.draw()
+    # Mostramos valores personaje:
+    #screen.draw.text(("❤️: " + str(personaje.salud)), midright=((WIDTH - 15), 14), color = 'white', fontsize = 16)
+    screen.draw.text(("❤️: " + str(personaje.salud_act) + "/" + str(personaje.salud_max)), midright=((WIDTH - 15), 14), color = 'white', fontsize = 16)
+    screen.draw.text(("🗡️: " + str(personaje.ataque)), midright=((WIDTH - 15), 36), color = 'white', fontsize = 16)
