@@ -11,14 +11,14 @@ Pack escalado (drive del profe): https://drive.google.com/drive/folders/19obh4TK
 Link al Repositorio de GitHub: https://github.com/rodrigovittori/Roguelike-4456
 Link al proyecto para remix: https://hub.kodland.org/project/309486
 ============================================================================================================================
-Version actual: [M9.L1] - Actividad #6: "Desplazamiento a través de las celdas"
-Objetivo: Implementar nuestro sistema de movimiento (por casillas/por turnos)
+Version actual: [M9.L1] - Actividad #8 (Adicional): "mantenerse dentro de los límites"
+Objetivo: Agregar condiciones de restricción al mov. del PJ para que no salga de la pantalla
 
 PASOS:
-1º) Implementar el despalzamiento entre celdas por turnos con on_key_down(key)
+1º) Modificar el desplazamiento en on_key_down() para que el PJ NO pueda atravesar las paredes
 
-NOTA 1: No olvidar el cambio de sprite
-NOTA 2: No olvidar las notas de ejercicios adicionales
+NOTA: La Actividad Nº 8 NO FORMA PARTE DEL PROYECTO por eso no se publica
+NOTA 2: Se puede modificar para usar el enum "keys" y agregar soporte vía numpad
 """
 
 # Ventana de juego hecha de celdas
@@ -37,6 +37,9 @@ paleta_terrenos.append(crack)
 huesos = Actor("bones") # 3: Suelo con una pilita de huesos
 paleta_terrenos.append(huesos)
 """ ******************************************************************* """
+
+# NOTA: El cambio de tamaño de las actividades Nº 9 y 10 se hace aquí
+
 cant_celdas_ancho = 7 # Ancho del mapa (en celdas)
 cant_celdas_alto =  7 # Altura del mapa (en celdas)
 
@@ -131,16 +134,18 @@ def draw():
     screen.draw.text(("🗡️: " + str(personaje.ataque)), midright=((WIDTH - 15), 36), color = 'white', fontsize = 16)
 
 def on_key_down(key):
-    if ((keyboard.right or keyboard.d)):
+    if ((keyboard.right or keyboard.d) and (personaje.x < (WIDTH - celda.width * 2))):
+        # ¿Xq 2?: Una (a la que me voy a desplazar) y otra (por la pared, que NO puedo atravesar)
         personaje.x += celda.width
         personaje.image = "stand" # xq stand mira a la dcha
     
-    elif ((keyboard.left or keyboard.a)):
+    elif ((keyboard.left or keyboard.a) and (personaje.x > (celda.width * 2))):
         personaje.x -= celda.width
         personaje.image = "left" # xq mira a la izq
         
-    elif ((keyboard.down or keyboard.s)):
+    elif ((keyboard.down or keyboard.s) and (personaje.y < HEIGHT - celda.height * 2)):
+        # A partir de la próxima actividad (9) deberían ser 3 celdas: a la que me muevo, la pared y el espacio para datos
         personaje.y += celda.height
     
-    elif ((keyboard.up or keyboard.w)):
+    elif ((keyboard.up or keyboard.w) and (personaje.y > (celda.height * 2))):
         personaje.y -= celda.height
