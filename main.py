@@ -11,18 +11,14 @@ Pack escalado (drive del profe): https://drive.google.com/drive/folders/19obh4TK
 Link al Repositorio de GitHub: https://github.com/rodrigovittori/Roguelike-4456
 Link al proyecto para remix: https://hub.kodland.org/project/309486
 ============================================================================================================================
-Version actual: [M9.L1] - Actividad #5: "Atributos"
-Objetivo: Familiarizarnos con los atributos agregando salud y ataque a nuestro personaje
-          > Creamos nuestro personaje como un objeto Actor() con sus respectivos atributos y los mostramos por pantalla
-
-NOTA: Modificar la llamada a dibujar_mapa() para que NO muestre los valores de cada casilla y eliminar texto de ventana
+Version actual: [M9.L1] - Actividad #6: "Desplazamiento a través de las celdas"
+Objetivo: Implementar nuestro sistema de movimiento (por casillas/por turnos)
 
 PASOS:
-1º) Creamos Actor() personaje
-2º) Le damos sus atributos (salud, ataque)
-3º) Modificar nuestra función draw() p/ mostrarlos
+1º) Implementar el despalzamiento entre celdas por turnos con on_key_down(key)
 
-NOTA: En el próximo ejercicio implementaremos el despalzamiento entre celdas por turnos con on_key_down(key)
+NOTA 1: No olvidar el cambio de sprite
+NOTA 2: No olvidar las notas de ejercicios adicionales
 """
 
 # Ventana de juego hecha de celdas
@@ -133,3 +129,18 @@ def draw():
     #screen.draw.text(("❤️: " + str(personaje.salud)), midright=((WIDTH - 15), 14), color = 'white', fontsize = 16)
     screen.draw.text(("❤️: " + str(personaje.salud_act) + "/" + str(personaje.salud_max)), midright=((WIDTH - 15), 14), color = 'white', fontsize = 16)
     screen.draw.text(("🗡️: " + str(personaje.ataque)), midright=((WIDTH - 15), 36), color = 'white', fontsize = 16)
+
+def on_key_down(key):
+    if ((keyboard.right or keyboard.d)):
+        personaje.x += celda.width
+        personaje.image = "stand" # xq stand mira a la dcha
+    
+    elif ((keyboard.left or keyboard.a)):
+        personaje.x -= celda.width
+        personaje.image = "left" # xq mira a la izq
+        
+    elif ((keyboard.down or keyboard.s)):
+        personaje.y += celda.height
+    
+    elif ((keyboard.up or keyboard.w)):
+        personaje.y -= celda.height
