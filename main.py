@@ -11,19 +11,16 @@ Pack escalado (drive del profe): https://drive.google.com/drive/folders/19obh4TK
 Link al Repositorio de GitHub: https://github.com/rodrigovittori/Roguelike-4456
 Link al proyecto para remix: https://hub.kodland.org/project/309486
 ============================================================================================================================
-Version actual: [M9.L2] - Actividades Nº 2 "Generando Enemigos"
-Objetivo: Crear nuestro primer enemigo y generar variaciones del mismo con componentes random/aleatorios
-
-NOTA: La actividad Nº 1 "Revisando nuestro mapa de sueños" NO involucra nuestro juego.
+Version actual: [M9.L2] - Actividades Nº 3 "Método Collidelist"
+Objetivo: Agregar colisiones y daño entre personajes
 
 Pasos:
-#1: Importar random
-#2: Creamos una constante que determine la cantidad de enemigos a spawnear (5) y una lista de enemigos
-#3: Creamos un bucle FOR donde calculamos la posición, la validamos,
-    creamos los actores enemigos y les asignamos su salud y ataque con valores randomizados
-#4: Agregamos un bucle FOR en nuestro draw() para mostrar los enemigos en pantalla
+#1: Crear una variable donde almacenar la info de colisiones
+#2: Después de mover al personaje, actualizamos nuestro valor de colisiones (¿global en on_key_down?)
+#3: En caso de colisión, calculamos los daños y actualizamos los valores
 
-Nota: Pronto calcularemos las colisiones contra ellos
+Nota: Se resta salud, más TODAVÍA no eliminamos enemigos - será en la próxima tarea -
+Nota 2: En caso de colisionar contra un enemigo NO deberíamos cambiar la pos del PJ
 """
 
 import random
@@ -72,6 +69,7 @@ personaje.ataque = 5
 
 CANT_ENEMIGOS_A_SPAWNEAR = 5
 lista_enemigos = []
+colision = -2 # ¿XQ -2 como valor inicial?: porque es un valor que NO nos puede devolver collidelist.
 
 # To-Do: migrar a función
 while(len(lista_enemigos) < CANT_ENEMIGOS_A_SPAWNEAR):
@@ -158,10 +156,12 @@ def draw():
     personaje.draw()
     
     # Mostramos valores personaje:
-    screen.draw.text(("❤️: " + str(personaje.salud_act) + "/" + str(personaje.salud_act) ), midleft = (int(celda.width / 2), (HEIGHT - int(celda.height / 2))), color = 'black', fontsize = 36)
+    screen.draw.text(("❤️: " + str(personaje.salud_act) + "/" + str(personaje.salud_max) ), midleft = (int(celda.width / 2), (HEIGHT - int(celda.height / 2))), color = 'black', fontsize = 36)
     screen.draw.text(("🗡️: " + str(personaje.ataque)), midright = ( (WIDTH - int(celda.width / 2)), (HEIGHT - int(celda.height / 2)) ), color = 'black', fontsize = 36)
 
 def on_key_down(key):
+    global colision
+    
     if ((keyboard.right or keyboard.d) and (personaje.x < (WIDTH - celda.width * 2))):
         # ¿Xq 2?: Una (a la que me voy a desplazar) y otra (por la pared, que NO puedo atravesar)
         personaje.x += celda.width
@@ -177,3 +177,14 @@ def on_key_down(key):
     
     elif ((keyboard.up or keyboard.w) and (personaje.y > (celda.height * 2))):
         personaje.y -= celda.height
+
+    ################## COLISIONES ##################
+    
+    colision = personaje.collidelist(lista_enemigos)
+
+    if (colision != -1):
+      # Si hubo colisión con un enemigo:
+      enemigo_atacado = lista_enemigos[colision]
+      enemigo_atacado.salud -= personaje.ataque
+      personaje.salud_act -= enemigo_atacado.ataque
+    # Nota: Podríamos agrgar un sistema de puntos de daño flotantes en pantalla
