@@ -47,8 +47,8 @@ paleta_terrenos.append(huesos)
 
 # NOTA: El cambio de tamaño de las actividades Nº 9 y 10 se hace aquí
 
-cant_celdas_ancho = 7 # Ancho del mapa (en celdas)
-cant_celdas_alto =  7 # Altura del mapa (en celdas)
+cant_celdas_ancho = 9 # Ancho del mapa (en celdas)
+cant_celdas_alto = 10 # Altura del mapa (en celdas)
 
 WIDTH  = celda.width  * cant_celdas_ancho # Ancho de la ventana (en píxeles)
 HEIGHT = celda.height * cant_celdas_alto  # Alto de la ventana (en píxeles)
@@ -101,21 +101,16 @@ while(len(lista_enemigos) < CANT_ENEMIGOS_A_SPAWNEAR):
 
 ################## MAPAS ##################
 
-mapa = [ [0, 0, 0, 0, 0, 0, 0],
-         [0, 1, 2, 1, 3, 1, 0],
-         [0, 1, 1, 2, 1, 1, 0],
-         [0, 3, 2, 1, 1, 3, 0],
-         [0, 1, 1, 1, 3, 1, 0],
-         [0, 1, 3, 1, 1, 2, 0],
-         [0, 0, 0, 0, 0, 0, 0] ]
-
-mapa_2 = [ [0, 0, 0, 0, 0, 0, 0],
-           [0, 1, 1, 1, 1, 1, 0],
-           [0, 1, 3, 1, 3, 1, 0],
-           [0, 1, 1, 1, 1, 1, 0],
-           [0, 3, 1, 1, 1, 3, 0],
-           [0, 1, 3, 3, 3, 1, 0],
-           [0, 0, 0, 0, 0, 0, 0] ]
+mapa = [ [00, 00, 00, 00, 00, 00, 00, 00, 00],
+         [00, 01, 01, 01, 01, 01, 01, 01, 00],
+         [00, 01, 01, 02, 01, 03, 01, 01, 00],
+         [00, 01, 01, 01, 02, 01, 01, 01, 00],
+         [00, 01, 03, 02, 01, 01, 03, 01, 00],
+         [00, 01, 01, 01, 01, 03, 01, 01, 00],
+         [00, 01, 01, 03, 01, 01, 02, 01, 00],
+         [00, 01, 01, 01, 01, 01, 01, 01, 00],
+         [00, 00, 00, 00, 00, 00, 00, 00, 00],
+         [-1, -1, -1, -1, -1, -1, -1, -1, -1] ]
 
 ##########################################
 
@@ -161,10 +156,10 @@ def draw():
         enemigo.draw()
     
     personaje.draw()
+    
     # Mostramos valores personaje:
-    #screen.draw.text(("❤️: " + str(personaje.salud)), midright=((WIDTH - 15), 14), color = 'white', fontsize = 16)
-    screen.draw.text(("❤️: " + str(personaje.salud_act) + "/" + str(personaje.salud_max)), midright=((WIDTH - 15), 14), color = 'white', fontsize = 16)
-    screen.draw.text(("🗡️: " + str(personaje.ataque)), midright=((WIDTH - 15), 36), color = 'white', fontsize = 16)
+    screen.draw.text(("❤️: " + str(personaje.salud_act) + "/" + str(personaje.salud_act) ), midleft = (int(celda.width / 2), (HEIGHT - int(celda.height / 2))), color = 'black', fontsize = 36)
+    screen.draw.text(("🗡️: " + str(personaje.ataque)), midright = ( (WIDTH - int(celda.width / 2)), (HEIGHT - int(celda.height / 2)) ), color = 'black', fontsize = 36)
 
 def on_key_down(key):
     if ((keyboard.right or keyboard.d) and (personaje.x < (WIDTH - celda.width * 2))):
@@ -176,7 +171,7 @@ def on_key_down(key):
         personaje.x -= celda.width
         personaje.image = "left" # xq mira a la izq
         
-    elif ((keyboard.down or keyboard.s) and (personaje.y < HEIGHT - celda.height * 2)):
+    elif ((keyboard.down or keyboard.s) and (personaje.y < HEIGHT - celda.height * 3)):
         # A partir de la próxima actividad (9) deberían ser 3 celdas: a la que me muevo, la pared y el espacio para datos
         personaje.y += celda.height
     
