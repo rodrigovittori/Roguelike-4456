@@ -11,14 +11,19 @@ Pack escalado (drive del profe): https://drive.google.com/drive/folders/19obh4TK
 Link al Repositorio de GitHub: https://github.com/rodrigovittori/Roguelike-4456
 Link al proyecto para remix: https://hub.kodland.org/project/309486
 ============================================================================================================================
-Version actual: [M9.L2] - Actividades Nº 4 "Procesamiento de colisiones"
-Objetivo del ejercicio: Eliminar enemigos cuya salud sea menor o igual a 0 puntos
+Version actual: [M9.L2] - Actividades Nº 5 "Aparición de las bonificaciones"
+Objetivo del ejercicio: Agregar mecánicas de bonus, su spawn, mostrarlas en pantalla
 
-NOTA: Todavía NO hay game-over (somos inmortales :D)
+NOTA: Todavía SEGUIMOS sin game-over (somos inmortales :D)
+
+NOTA 2: Las colisiones con los bonus se programan en la SIGUIENTE tarea
 
 Pasos:
-#1: Crear una variable donde almacenemos la posición del jugador ANTES de moverse, en caso de colisión, lo regresamos a esas coordenadas
-#2: Agregar una condición donde, si hubo colisión Y la salud del enemigo baja a 0 o un valor negativo, lo eliminamos
+
+#1: Crear una nueva lista para los bonus
+#2: Durante la creación de enemigos vamos a asignarles un valor de bonus que dropearán tras ser derrotados
+#3: Agregar un bucle en draw para dibujar los bonus en pantalla
+#4: Al derrotar a un enemigo, spawnearemos el bonus que se le asignó al crearlo
 """
 
 import random
@@ -63,6 +68,9 @@ personaje.salud_act = personaje.salud_max # El PJ empieza con la vida llena
 # (también pueden implementar un sistema de miss y critical hits) Por ejemplo ataque de 2-5 de daño y crítico 2xMAX = 10
 personaje.ataque = 5
 
+lista_bonus = []
+tipos_bonus = [None, "heart", "sword"]
+
 ################# ENEMIGOS ################
 
 CANT_ENEMIGOS_A_SPAWNEAR = 5
@@ -91,6 +99,7 @@ while(len(lista_enemigos) < CANT_ENEMIGOS_A_SPAWNEAR):
         # Si NO hay conflicto: randomizamos salud, ataque y lo agregamos a lista_enemigos
         nvo_enemigo.salud = random.randint(10, 20)
         nvo_enemigo.ataque = random.randint(5, 10)
+        nvo_enemigo.bonus= random.randint(0, (len(tipos_bonus) - 1)) # 0: NADA, 1: curación, 2: espada
         
         """ FINALMENTE, lo agregamos a la lista """
         lista_enemigos.append(nvo_enemigo)
@@ -148,6 +157,9 @@ def draw():
     #       podríamos simplemente dibujarlo UNA vez y no en cada frame
     #       Implementar este cambio cuando nuestro juego tenga lógica más compleja
 
+    for bonus in lista_bonus:
+        bonus.draw()
+    
     for enemigo in lista_enemigos:
         enemigo.draw()
     
@@ -195,8 +207,17 @@ def on_key_down(key):
       # Nota: Podríamos agregar un sistema de puntos de daño flotantes en pantalla
       # Nota 2: Podríamos agregar animaciones básicas también
 
-      # Si el enemigo se quedó sin puntos de salud, lo eliminamos:
+      # Si el enemigo se quedó sin puntos de salud:
       if (enemigo_atacado.salud <= 0):
+
+          # ANTES DE DESTRUÍRLO/ELIMINARLO -> Spawneamos bonus:
+          if (enemigo_atacado.bonus != 0):
+              # Spawneo un nuevo bonus en la posición del enemigo derrotado
+              nvo_bonus = Actor(tipos_bonus[enemigo_atacado.bonus], enemigo_atacado.pos)    
+              lista_bonus.append(nvo_bonus) # Lo agrego a la lista de bonus
+
+          # Ya creado el bonus, bye bye~♥
+          
           # Método Nº 1: pop() con índice según colision
           #lista_enemigos.pop(colision)
 
