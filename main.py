@@ -11,15 +11,22 @@ Pack escalado (drive del profe): https://drive.google.com/drive/folders/19obh4TK
 Link al Repositorio de GitHub: https://github.com/rodrigovittori/Roguelike-4456
 Link al proyecto para remix: https://hub.kodland.org/project/309486
 ============================================================================================================================
-Version actual: [M9.L1] - Actividad #8 (Adicional): "mantenerse dentro de los límites"
-Objetivo: Agregar condiciones de restricción al mov. del PJ para que no salga de la pantalla
+Version actual: [M9.L2] - Actividades Nº 2 "Generando Enemigos"
+Objetivo: Crear nuestro primer enemigo y generar variaciones del mismo con componentes random/aleatorios
 
-PASOS:
-1º) Modificar el desplazamiento en on_key_down() para que el PJ NO pueda atravesar las paredes
+NOTA: La actividad Nº 1 "Revisando nuestro mapa de sueños" NO involucra nuestro juego.
 
-NOTA: La Actividad Nº 8 NO FORMA PARTE DEL PROYECTO por eso no se publica
-NOTA 2: Se puede modificar para usar el enum "keys" y agregar soporte vía numpad
+Pasos:
+#1: Importar random
+#2: Creamos una constante que determine la cantidad de enemigos a spawnear (5) y una lista de enemigos
+#3: Creamos un bucle FOR donde calculamos la posición, la validamos,
+    creamos los actores enemigos y les asignamos su salud y ataque con valores randomizados
+#4: Agregamos un bucle FOR en nuestro draw() para mostrar los enemigos en pantalla
+
+Nota: Pronto calcularemos las colisiones contra ellos
 """
+
+import random
 
 # Ventana de juego hecha de celdas
 celda = Actor('border') # Celda que voy a utilizar como referencia para mi mapa
@@ -61,6 +68,37 @@ personaje.salud_act = personaje.salud_max # El PJ empieza con la vida llena
 # (también pueden implementar un sistema de miss y critical hits) Por ejemplo ataque de 2-5 de daño y crítico 2xMAX = 10
 personaje.ataque = 5
 
+################# ENEMIGOS ################
+
+CANT_ENEMIGOS_A_SPAWNEAR = 5
+lista_enemigos = []
+
+# To-Do: migrar a función
+while(len(lista_enemigos) < CANT_ENEMIGOS_A_SPAWNEAR):
+    """ PASO 1: Generar coordenadas random """
+    
+    x = (random.randint(1, cant_celdas_ancho - 2) *  celda.width)
+    y = (random.randint(1, cant_celdas_alto - 3)  * celda.height)
+    # To-Do: Agregar variable para determinar tipo de enemigo a spawnear
+
+    nvo_enemigo = Actor("enemy", topleft = (x, y))
+
+    """ PASO 2: Validar posición / evitar enemigos superpuestos """
+    # Validamos que los enemigos no spawneen uno sobre el otro
+    posicion_duplicada = nvo_enemigo.collidelist(lista_enemigos) != -1
+    
+    if (posicion_duplicada):
+        continue
+        
+    else:
+        """ PASO 3: Generar atributos random """
+        # Si NO hay conflicto: randomizamos salud, ataque y lo agregamos a lista_enemigos
+        nvo_enemigo.salud = random.randint(10, 20)
+        nvo_enemigo.ataque = random.randint(5, 10)
+        
+        """ FINALMENTE, lo agregamos a la lista """
+        lista_enemigos.append(nvo_enemigo)
+
 ################## MAPAS ##################
 
 mapa = [ [0, 0, 0, 0, 0, 0, 0],
@@ -93,23 +131,15 @@ def dibujar_mapa(mapa, mostrar_texto):
   for fila in range(len(mapa)):
     for columna in range(len(mapa[fila])):
 
-      """
-      Lista códigos terrenos
-      
-      0: pared
-      1: piso (sin nada)
-      2: piso (roto/resquebrajado)
-      3: piso (c/ huesitos)
-      """
-
       # https://pygame-zero.readthedocs.io/en/stable/builtins.html?highlight=anchor#positioning-actors
 
-      """ NOTA: Yo podría multiplicar SIEMPRE por el tamaño de celda, PERO si hacemos eso,
-                ¿Cómo me daría cuenta si alguna casilla me quedó mal escalada? """
+      if (mapa[fila][columna] != -1):
+          """ NOTA: Yo podría multiplicar SIEMPRE por el tamaño de celda, PERO si hacemos eso,
+                    ¿Cómo me daría cuenta si alguna casilla me quedó mal escalada? """
 
-      paleta_terrenos[mapa[fila][columna]].left =  pared.width * columna    # POS EN X
-      paleta_terrenos[mapa[fila][columna]].top  = pared.height * fila       # POS EN Y
-      paleta_terrenos[mapa[fila][columna]].draw()
+          paleta_terrenos[mapa[fila][columna]].left =  pared.width * columna    # POS EN X
+          paleta_terrenos[mapa[fila][columna]].top  = pared.height * fila       # POS EN Y
+          paleta_terrenos[mapa[fila][columna]].draw()
         
       if (mostrar_texto):
           screen.draw.text( str(mapa_actual[fila][columna]),
@@ -127,6 +157,9 @@ def draw():
     #       podríamos simplemente dibujarlo UNA vez y no en cada frame
     #       Implementar este cambio cuando nuestro juego tenga lógica más compleja
 
+    for enemigo in lista_enemigos:
+        enemigo.draw()
+    
     personaje.draw()
     # Mostramos valores personaje:
     #screen.draw.text(("❤️: " + str(personaje.salud)), midright=((WIDTH - 15), 14), color = 'white', fontsize = 16)
